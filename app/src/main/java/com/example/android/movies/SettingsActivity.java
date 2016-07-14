@@ -47,6 +47,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         // name.
                         String name = ringtone.getTitle(preference.getContext());
                         preference.setSummary(name);
+
                     }
                 }
 
