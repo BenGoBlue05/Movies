@@ -1,0 +1,55 @@
+<ScrollView android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content">
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="com.example.android.movies.DetailFragment">
+
+    <ImageView
+        android:id="@+id/detail_poster_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/detail_title_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/detail_textview_padding"
+        android:textSize="@dimen/title_text_size"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text"/>
+
+    <TextView
+        android:id="@+id/detail_release_date_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:textStyle="italic"
+        android:textColor="@color/secondary_text"/>
+
+    <TextView
+        android:id="@+id/detail_vote_avg_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:textColor="@color/secondary_text"/>
+
+    <TextView
+        android:id="@+id/detail_synopsis_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/detail_textview_padding"
+        android:textSize="@dimen/synopsis_text_size"
+        android:textColor="@color/primary_text"/>
+
+</LinearLayout>
+
+
+</ScrollView>
+
