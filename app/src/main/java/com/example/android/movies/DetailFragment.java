@@ -38,7 +38,7 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_detail, container, false);
         mMovie = getActivity().getIntent().getParcelableExtra("EXTRA_MOVIE");
-        mPosterPathStr = mMovie.getmPosterUrlStr();
+        mPosterPathStr = mMovie.getPosterUrlStr();
         mImageView = (ImageView) getActivity().findViewById(R.id.detail_poster_imageview);
 
         return rootview;
@@ -95,12 +95,12 @@ public class DetailFragment extends Fragment {
             TextView voteAvgTextView = (TextView) getActivity().findViewById(R.id.detail_vote_avg_textview);
             TextView summaryTextView  = (TextView) getActivity().findViewById(R.id.detail_synopsis_textview);
 
-            String releaseDateStr = "Release Date: " + mMovie.getmReleaseDate();
-            String voteAvgStr = "Average Rating: " + mMovie.getmVoteAvg();
+            String releaseDateStr = "Release Date: " + mMovie.getReleaseDate();
+            String voteAvgStr = "Average Rating: " + mMovie.getVoteAvg();
 
-            titleTextView.setText(mMovie.getmTitle());
+            titleTextView.setText(mMovie.getTitle());
             voteAvgTextView.setText(voteAvgStr);
-            summaryTextView.setText(mMovie.getmSynopsis());
+            summaryTextView.setText(mMovie.getSynopsis());
             releaseDateTextView.setText(releaseDateStr);
             mImageView = (ImageView) getActivity().findViewById(R.id.detail_poster_imageview);
             if (mImageView != null){

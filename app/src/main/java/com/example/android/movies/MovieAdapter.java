@@ -41,7 +41,7 @@ public class MovieAdapter extends ArrayAdapter<Movie>{
 
         ViewHolder holder = (ViewHolder) gridItemView.getTag();
         Movie movie = getItem(position);
-        String finalImgUrlStr = BASE_URL + movie.getmPosterUrlStr();
+        String finalImgUrlStr = BASE_URL + movie.getPosterUrlStr();
         Picasso.with(getContext()).load(finalImgUrlStr).into(holder.imageView);
 
         return gridItemView;

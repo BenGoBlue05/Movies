@@ -22,44 +22,24 @@ public class Movie implements Parcelable{
         this.mSynopsis = mSynopsis;
     }
 
-    public String getmPosterUrlStr() {
+    public String getPosterUrlStr() {
         return mPosterUrlStr;
     }
 
-    public void setmPosterUrlStr(String mPosterUrlStr) {
-        this.mPosterUrlStr = mPosterUrlStr;
-    }
-
-    public String getmReleaseDate() {
+    public String getReleaseDate() {
         return mReleaseDate;
     }
 
-    public void setmReleaseDate(String mReleaseDate) {
-        this.mReleaseDate = mReleaseDate;
-    }
-
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
-    }
-
-    public double getmVoteAvg() {
+    public double getVoteAvg() {
         return mVoteAvg;
     }
 
-    public void setmVoteAvg(double mVoteAvg) {
-        this.mVoteAvg = mVoteAvg;
-    }
-
-    public String getmSynopsis() {
+    public String getSynopsis() {
         return mSynopsis;
-    }
-
-    public void setmSynopsis(String mSynopsis) {
-        this.mSynopsis = mSynopsis;
     }
 
     protected Movie(Parcel in) {
