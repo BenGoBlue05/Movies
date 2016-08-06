@@ -24,6 +24,7 @@ public class MovieDbHelper extends SQLiteOpenHelper{
                     MovieEntry._ID + " INTEGER PRIMARY KEY, " +
                     MovieEntry.COLUMN_TITLE + TEXT_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_RELEASE_DATE + INTEGER_TYPE + COMMA_SEP +
+                    MovieEntry.COLUMN_POSTER + BLOB_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_VOTE_AVG + REAL_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_SYNOPSIS + TEXT_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_TRAILER + BLOB_TYPE + COMMA_SEP +

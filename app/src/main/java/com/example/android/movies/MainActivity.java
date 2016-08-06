@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.stetho.Stetho;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
