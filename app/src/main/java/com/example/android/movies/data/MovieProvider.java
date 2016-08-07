@@ -18,7 +18,8 @@ public class MovieProvider extends ContentProvider{
     private MovieDbHelper mOpenHelper;
 
     static final int MOVIE = 100;
-    static final int MOVIE_WITH_ID = 101;
+    static final int MOVIE_TABLE_ID = 101;
+    static final int MOVIE_ID = 200;
     static final String sMovieIdSelection =
             MovieContract.MovieEntry._ID + " = ?";
 
@@ -26,7 +27,8 @@ public class MovieProvider extends ContentProvider{
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
         uriMatcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
-        uriMatcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_WITH_ID);
+        uriMatcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", MOVIE_TABLE_ID);
+        uriMatcher.addURI(authority, MovieContract.PATH_MOVIE + "/#/#", MOVIE_ID);
         return uriMatcher;
     }
 
@@ -58,7 +60,7 @@ public class MovieProvider extends ContentProvider{
                         .query(MovieContract.MovieEntry.TABLE_NAME, projection, selection,
                 selectionArgs, null, null, sortOrder);
                 break;
-            case MOVIE_WITH_ID:
+            case MOVIE_TABLE_ID:
                 retCursor = getMovieById(uri, projection, sortOrder);
                 break;
             default:
@@ -73,7 +75,7 @@ public class MovieProvider extends ContentProvider{
         switch (sUriMatcher.match(uri)){
             case MOVIE:
                 return MovieContract.MovieEntry.CONTENT_TYPE;
-            case MOVIE_WITH_ID:
+            case MOVIE_TABLE_ID:
                 return MovieContract.MovieEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("UNKNOWN URI: " + uri);
@@ -109,7 +111,7 @@ public class MovieProvider extends ContentProvider{
                 rowsDeleted = db.delete(
                         MovieContract.MovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            case MOVIE_WITH_ID:
+            case MOVIE_TABLE_ID:
                 long id = MovieContract.MovieEntry.getIdFromUri(uri);
                 rowsDeleted = db.delete(
                         MovieContract.MovieEntry.TABLE_NAME, sMovieIdSelection, new String[]{Long.toString(id)});
@@ -130,7 +132,7 @@ public class MovieProvider extends ContentProvider{
             case MOVIE:
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME, contentValues, selection, selectionArgs);
                 break;
-            case MOVIE_WITH_ID:
+            case MOVIE_TABLE_ID:
                 long id = MovieContract.MovieEntry.getIdFromUri(uri);
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME,
                         contentValues, sMovieIdSelection, new String[]{Long.toString(id)});

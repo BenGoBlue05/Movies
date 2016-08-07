@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class MovieAdapter extends ArrayAdapter<Movie>{
 
-    private final String LOG_TAG = "ArrayAdapter";
+    private final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
     public MovieAdapter(Context context, ArrayList<Movie> movies) {
         super(context, 0, movies);

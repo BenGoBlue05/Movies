@@ -203,9 +203,7 @@ public class MovieFragment extends Fragment {
         protected void onPostExecute(ArrayList<Movie> movies) {
             if (movies != null){
                 mMovieAdapter.clear();
-                for (Movie movie : movies){
-                    mMovieAdapter.add(movie);
-                }
+                mMovieAdapter.addAll(movies);
             }
             super.onPostExecute(movies);
         }

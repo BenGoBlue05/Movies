@@ -77,4 +77,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+
+    <string name="add_to_favorites">Add to Favorites</string>
 </resources>
