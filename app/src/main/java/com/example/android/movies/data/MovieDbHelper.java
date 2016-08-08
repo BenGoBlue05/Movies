@@ -11,7 +11,7 @@ import com.example.android.movies.data.MovieContract.MovieEntry;
 
 public class MovieDbHelper extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "movie.db";
 
     private static final String TEXT_TYPE = " TEXT NOT NULL";
@@ -24,12 +24,14 @@ public class MovieDbHelper extends SQLiteOpenHelper{
                     MovieEntry._ID + " INTEGER PRIMARY KEY, " +
                     MovieEntry.COLUMN_MOVIE_ID + INTEGER_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_TITLE + TEXT_TYPE + COMMA_SEP +
-                    MovieEntry.COLUMN_RELEASE_DATE + INTEGER_TYPE + COMMA_SEP +
-                    MovieEntry.COLUMN_POSTER + BLOB_TYPE + COMMA_SEP +
+                    MovieEntry.COLUMN_RELEASE_DATE + TEXT_TYPE + COMMA_SEP +
+                    MovieEntry.COLUMN_POSTER_PATH + BLOB_TYPE + COMMA_SEP +
                     MovieEntry.COLUMN_VOTE_AVG + REAL_TYPE + COMMA_SEP +
-                    MovieEntry.COLUMN_SYNOPSIS + TEXT_TYPE + COMMA_SEP +
-                    MovieEntry.COLUMN_TRAILER + BLOB_TYPE + COMMA_SEP +
-                    MovieEntry.COLUMN_USER_REVIEW + TEXT_TYPE + ");";
+                    MovieEntry.COLUMN_SYNOPSIS + TEXT_TYPE +
+//                    COMMA_SEP +
+//                    MovieEntry.COLUMN_TRAILER + BLOB_TYPE + COMMA_SEP +
+//                    MovieEntry.COLUMN_USER_REVIEW + TEXT_TYPE +
+                    ");";
 
     private static final String SQL_DELETE_TABLE =
             "DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME;

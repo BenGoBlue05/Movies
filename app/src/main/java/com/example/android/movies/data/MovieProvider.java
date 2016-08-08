@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
+
 /**
  * Created by bplewis5 on 8/6/16.
  */
@@ -90,6 +92,8 @@ public class MovieProvider extends ContentProvider{
                  long id = mOpenHelper.getWritableDatabase().insert(
                          MovieContract.MovieEntry.TABLE_NAME, null, contentValues
                 );
+                Log.i(LOG_TAG, "HERE IS THE ID: " + id);
+                Log.i(LOG_TAG, "THIS IS NEW");
                 if (id > 0)
                     returnUri = MovieContract.MovieEntry.buildMovieUri(id);
                 else

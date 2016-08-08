@@ -29,8 +29,7 @@ import java.util.ArrayList;
 
 
 public class MovieFragment extends Fragment {
-    private final String LOG_TAG = "MovieFragment";
-    private final int MAX_RESULTS = 48;
+    private final String LOG_TAG = MovieFragment.class.getSimpleName();
     private MovieAdapter mMovieAdapter;
 
     public MovieFragment() {
@@ -87,6 +86,7 @@ public class MovieFragment extends Fragment {
 
             final String RESULTS = "results";
             final String POSTER_PATH = "poster_path";
+            final String MOVIE_ID = "id";
             final String TITLE = "title";
             final String RELEASE_DATE = "release_date";
             final String VOTE_AVG = "vote_average";
@@ -106,6 +106,7 @@ public class MovieFragment extends Fragment {
 
                 for (int i = 0; i < numMovies; i++) {
                     String posterPath;
+                    long movieId;
                     String title;
                     String releaseDate;
                     double voteAverage;
@@ -114,12 +115,14 @@ public class MovieFragment extends Fragment {
                     try {
                         JSONObject movie = results.getJSONObject(i);
                         posterPath = movie.getString(POSTER_PATH);
+                        movieId = movie.getLong(MOVIE_ID);
                         title = movie.getString(TITLE);
                         releaseDate = movie.getString(RELEASE_DATE);
                         voteAverage = movie.getDouble(VOTE_AVG);
                         synopsis = movie.getString(OVERVIEW);
+                        Log.i(LOG_TAG, "THIS IS THE MOVIE ID: " + movieId);
 
-                        movies.add(new Movie(posterPath, releaseDate, title, voteAverage, synopsis));
+                        movies.add(new Movie(movieId, posterPath, releaseDate, title, voteAverage, synopsis));
                     } catch (JSONException e) {
                         Log.e(LOG_TAG, "JSON exception: ", e);
                     }
@@ -154,7 +157,7 @@ public class MovieFragment extends Fragment {
                 httpURLConnection.connect();
 
                 InputStream inputStream = httpURLConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder builder = new StringBuilder();
                 if (inputStream == null){
                     return null;
                 }
@@ -163,13 +166,13 @@ public class MovieFragment extends Fragment {
 
                 String line;
                 while((line = bufferedReader.readLine()) != null){
-                    buffer.append(line + "\n");
+                    builder.append(line).append("\n");
                 }
 
-                if (buffer.length() == 0){
+                if (builder.length() == 0){
                     return null;
                 }
-                jsonStr = buffer.toString();
+                jsonStr = builder.toString();
             }
             catch (IOException e){
                 Log.e(LOG_TAG, "Error: ", e);
@@ -189,6 +192,7 @@ public class MovieFragment extends Fragment {
             }
 
             try{
+                int MAX_RESULTS = 48;
                 return getMoviesFromJsonStr(jsonStr, MAX_RESULTS);
             }catch (JSONException e){
                 Log.e(LOG_TAG, "Error ", e);
