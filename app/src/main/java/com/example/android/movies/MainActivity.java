@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null){
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container_main_activity, new MovieFragment())
+                    .add(R.id.container_main_activity, new MainFragment())
                     .commit();
         }
     }

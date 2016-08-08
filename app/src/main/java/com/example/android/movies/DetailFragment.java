@@ -14,7 +14,8 @@ import android.widget.TextView;
 
 import com.example.android.movies.data.MovieContract;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
+
+import java.util.ArrayList;
 
 
 public class DetailFragment extends Fragment {
@@ -26,6 +27,7 @@ public class DetailFragment extends Fragment {
     private String mPosterPath;
     private double mVoteAverage;
     private String mSynopsis;
+    private long mMovieId;
 
     public DetailFragment() {
     }
@@ -40,16 +42,16 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        Movie mMovie = getActivity().getIntent().getParcelableExtra("EXTRA_MOVIE");
+        Movie movie = getActivity().getIntent().getParcelableExtra("EXTRA_MOVIE");
 
-        long mMovieId = mMovie.getMovieId();
+        mTitle = movie.getTitle();
+        mReleaseDate = movie.getReleaseDate();
+        mPosterPath = movie.getPosterUrlStr();
+        mVoteAverage = movie.getVoteAvg();
+        mSynopsis = movie.getSynopsis();
+        mMovieId = movie.getMovieId();
+
         Log.i(LOG_TAG, "THIS IS THE CHOSEN MOVIE'S ID: " + mMovieId);
-        mTitle = mMovie.getTitle();
-        mReleaseDate = mMovie.getReleaseDate();
-        mPosterPath = mMovie.getPosterUrlStr();
-        mVoteAverage = mMovie.getVoteAvg();
-        mSynopsis = mMovie.getSynopsis();
-
         final ContentValues values =
                 createValues(mMovieId, mTitle, mReleaseDate, mPosterPath, mVoteAverage, mSynopsis);
 
@@ -72,7 +74,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void updateMovie() {
-        new FetchDetailsTask().execute();
+        new FetchDetailsTask().execute(mMovieId);
     }
 
     public ContentValues createValues(
@@ -81,7 +83,7 @@ public class DetailFragment extends Fragment {
 
         ContentValues values = new ContentValues();
         values.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieId);
-        values.put( MovieContract.MovieEntry.COLUMN_TITLE, title);
+        values.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
         values.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, releaseDate);
         values.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, posterPath);
         values.put(MovieContract.MovieEntry.COLUMN_VOTE_AVG, voteAverage);
@@ -91,23 +93,38 @@ public class DetailFragment extends Fragment {
     }
 
 
-    public class FetchDetailsTask extends AsyncTask<String, Void, RequestCreator> {
+    public class FetchDetailsTask extends AsyncTask<Long, Void, ArrayList<String>> {
 
         @Override
-        protected RequestCreator doInBackground(String... params) {
-            final String BASE_URL = "http://image.tmdb.org/t/p/w500/";
-            return Picasso.with(getContext()).load(BASE_URL + mPosterPath);
+        protected ArrayList<String> doInBackground(Long... movieIds) {
+            if (movieIds.length == 0){
+                return null;
+            }
+
+            ArrayList<String> reviews = Utility.getReviews(movieIds[0]);
+            if (reviews != null) {
+                Log.i(LOG_TAG, "GOT REVIEW" + reviews.get(0));
+            }
+            return reviews;
         }
 
         @Override
-        protected void onPostExecute(RequestCreator requestCreator) {
+        protected void onPostExecute(ArrayList<String> reviews) {
+            String posterBaseUrl = "http://image.tmdb.org/t/p/w500/";
+
             TextView titleTextView = (TextView) getActivity().findViewById(R.id.detail_title_textview);
             TextView releaseDateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_textview);
             TextView voteAvgTextView = (TextView) getActivity().findViewById(R.id.detail_vote_avg_textview);
             TextView summaryTextView = (TextView) getActivity().findViewById(R.id.detail_synopsis_textview);
-
+            TextView userReviewTextView = (TextView) getActivity().findViewById((R.id.detail_review_textview));
             String releaseDateStr = "Release Date: " + mReleaseDate;
             String voteAvgStr = "Average Rating: " + mVoteAverage;
+
+            try{
+                userReviewTextView.setText(reviews.get(0));
+            } catch (NullPointerException e){
+                Log.e(LOG_TAG, "NULL POINTER", e);
+            }
 
             titleTextView.setText(mTitle);
             voteAvgTextView.setText(voteAvgStr);
@@ -115,12 +132,11 @@ public class DetailFragment extends Fragment {
             releaseDateTextView.setText(releaseDateStr);
             ImageView imageView = (ImageView) getActivity().findViewById(R.id.detail_poster_imageview);
             if (imageView != null) {
-                if (requestCreator != null) {
-                    requestCreator.into(imageView);
-                }
+                Picasso.with(getContext()).load(posterBaseUrl + mPosterPath).into(imageView);
             }
         }
     }
-
-
 }
+
+
+
