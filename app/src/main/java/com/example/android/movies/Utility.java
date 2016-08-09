@@ -122,6 +122,23 @@ public final class Utility {
         return reviews;
     }
 
+    public static String getTrailerKeyFromJson(String jsonStr){
+        try{
+            JSONObject trailerJson;
+
+            JSONObject initJson = new JSONObject(jsonStr);
+            JSONArray results = initJson.getJSONArray("results");
+
+            if (results.length() > 0){
+                trailerJson = results.getJSONObject(0);
+                return trailerJson.getString("key");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static ArrayList<Movie> getMovies(String searchQuery) {
 
         try {
@@ -157,6 +174,26 @@ public final class Utility {
         }
         return null;
     }
+
+    public static String getTrailerKey(long movieId) {
+
+        try {
+            final String urlStr = "http://api.themoviedb.org/3/movie/" +
+                    movieId + "/videos?";
+            URL url = createUrl(urlStr);
+            String jsonStr = makeHttpRequest(url);
+            String trailerKey = getTrailerKeyFromJson(jsonStr);
+            Log.i(LOG_TAG_UTILITY, "TRAILER KEY: " + trailerKey);
+            return trailerKey;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+
 
     private static URL createUrl(String baseUrl){
         String API_PARAM = "api_key";

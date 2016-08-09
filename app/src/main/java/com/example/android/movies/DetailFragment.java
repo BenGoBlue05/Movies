@@ -1,6 +1,8 @@
 package com.example.android.movies;
 
 import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,13 +23,14 @@ import java.util.ArrayList;
 public class DetailFragment extends Fragment {
 
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
-
     private String mTitle;
     private String mReleaseDate;
     private String mPosterPath;
     private double mVoteAverage;
     private String mSynopsis;
     private long mMovieId;
+    private String mTrailerKey;
+
 
     public DetailFragment() {
     }
@@ -51,6 +54,7 @@ public class DetailFragment extends Fragment {
         mSynopsis = movie.getSynopsis();
         mMovieId = movie.getMovieId();
 
+
         Log.i(LOG_TAG, "THIS IS THE CHOSEN MOVIE'S ID: " + mMovieId);
         final ContentValues values =
                 createValues(mMovieId, mTitle, mReleaseDate, mPosterPath, mVoteAverage, mSynopsis);
@@ -66,6 +70,7 @@ public class DetailFragment extends Fragment {
 
         return rootview;
     }
+
 
     @Override
     public void onStart() {
@@ -92,25 +97,32 @@ public class DetailFragment extends Fragment {
         return values;
     }
 
-
-    public class FetchDetailsTask extends AsyncTask<Long, Void, ArrayList<String>> {
+    public class FetchDetailsTask extends AsyncTask<Long, Void, ArrayList<String>>  {
 
         @Override
         protected ArrayList<String> doInBackground(Long... movieIds) {
-            if (movieIds.length == 0){
+            if (movieIds.length == 0) {
                 return null;
             }
 
             ArrayList<String> reviews = Utility.getReviews(movieIds[0]);
+            mTrailerKey = Utility.getTrailerKey(movieIds[0]);
+
             if (reviews != null) {
-                Log.i(LOG_TAG, "GOT REVIEW" + reviews.get(0));
+                try {
+                    Log.i(LOG_TAG, "GOT REVIEW" + reviews.get(0));
+                } catch (IndexOutOfBoundsException e) {
+                    Log.e(LOG_TAG, "INDEX OUT OF BOUNDS ", e);
+                }
             }
             return reviews;
         }
 
         @Override
         protected void onPostExecute(ArrayList<String> reviews) {
-            String posterBaseUrl = "http://image.tmdb.org/t/p/w500/";
+            final String posterUrl = "http://image.tmdb.org/t/p/w500/" + mPosterPath;
+            final String trailerUrl = "https://www.youtube.com/watch?v=" + mTrailerKey;
+            final String trailerThumbnailUrl = String.format("http://img.youtube.com/vi/%1$s/0.jpg", mTrailerKey);
 
             TextView titleTextView = (TextView) getActivity().findViewById(R.id.detail_title_textview);
             TextView releaseDateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_textview);
@@ -120,21 +132,41 @@ public class DetailFragment extends Fragment {
             String releaseDateStr = "Release Date: " + mReleaseDate;
             String voteAvgStr = "Average Rating: " + mVoteAverage;
 
-            try{
+
+            try {
                 userReviewTextView.setText(reviews.get(0));
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 Log.e(LOG_TAG, "NULL POINTER", e);
+            }catch (IndexOutOfBoundsException e){
+                Log.e(LOG_TAG, "INDEX OUT OF BOUNDS");
             }
 
             titleTextView.setText(mTitle);
             voteAvgTextView.setText(voteAvgStr);
             summaryTextView.setText(mSynopsis);
             releaseDateTextView.setText(releaseDateStr);
-            ImageView imageView = (ImageView) getActivity().findViewById(R.id.detail_poster_imageview);
-            if (imageView != null) {
-                Picasso.with(getContext()).load(posterBaseUrl + mPosterPath).into(imageView);
+
+            ImageView poster = (ImageView) getActivity().findViewById(R.id.detail_poster_imageview);
+            if (poster != null) {
+                Picasso.with(getContext()).load(posterUrl).into(poster);
             }
+
+            ImageView trailer = (ImageView) getActivity().findViewById(R.id.detail_trailer_imageview);
+            if (trailer != null){
+                Picasso.with(getContext()).load(trailerThumbnailUrl).into(trailer);
+                trailer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent trailerIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(trailerUrl));
+                        startActivity(trailerIntent);
+                    }
+                });
+            }
+
+
         }
+
+
     }
 }
 
