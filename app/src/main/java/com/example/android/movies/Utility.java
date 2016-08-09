@@ -41,18 +41,13 @@ public final class Utility {
     static final int COL_VOTE_AVG = 5;
     static final int COL_SYNOPSIS = 6;
     private static final String LOG_TAG_UTILITY = Utility.class.getSimpleName();
+    static String sSortBy;
     private final String LOG_TAG = DetailActivity.class.getSimpleName();
 
     public static ArrayList<Movie> getMoviesFromJsonStr(String jsonStr, int maxResults)
             throws JSONException {
 
         final String RESULTS = "results";
-        final String POSTER_PATH = "poster_path";
-        final String MOVIE_ID = "id";
-        final String TITLE = "title";
-        final String RELEASE_DATE = "release_date";
-        final String VOTE_AVG = "vote_average";
-        final String OVERVIEW = "overview";
 
         ArrayList<Movie> movies = new ArrayList<>();
         int numMovies;
@@ -67,32 +62,42 @@ public final class Utility {
             }
 
             for (int i = 0; i < numMovies; i++) {
-                String posterPath;
-                long movieId;
-                String title;
-                String releaseDate;
-                double voteAverage;
-                String synopsis;
-
                 try {
-                    JSONObject movie = results.getJSONObject(i);
-                    posterPath = movie.getString(POSTER_PATH);
-                    movieId = movie.getLong(MOVIE_ID);
-                    title = movie.getString(TITLE);
-                    releaseDate = movie.getString(RELEASE_DATE);
-                    voteAverage = movie.getDouble(VOTE_AVG);
-                    synopsis = movie.getString(OVERVIEW);
-                    Log.i(LOG_TAG_UTILITY, "THIS IS THE MOVIE ID: " + movieId);
-
-                    movies.add(new Movie(movieId, posterPath, releaseDate, title, voteAverage, synopsis));
+                    JSONObject movieData = results.getJSONObject(i);
+                    Movie movie = getMovieFromJsonObject(movieData);
+                    movies.add(movie);
                 } catch (JSONException e) {
-                    Log.e(LOG_TAG_UTILITY, "JSON exception: ", e);
+                    Log.e(LOG_TAG_UTILITY, "JSON EXCEPTION: ", e);
                 }
             }
+
         } catch (JSONException e) {
-            Log.e(LOG_TAG_UTILITY, "Missing field ", e);
+            Log.e(LOG_TAG_UTILITY, "MISSING FIELD ", e);
         }
         return movies;
+    }
+
+    public static Movie getMovieFromJsonObject(JSONObject movieJSON) {
+        try {
+
+            final String POSTER_PATH = "poster_path";
+            final String MOVIE_ID = "id";
+            final String TITLE = "title";
+            final String RELEASE_DATE = "release_date";
+            final String VOTE_AVG = "vote_average";
+            final String OVERVIEW = "overview";
+
+            String posterPath = movieJSON.getString(POSTER_PATH);
+            long movieId = movieJSON.getLong(MOVIE_ID);
+            String title = movieJSON.getString(TITLE);
+            String releaseDate = movieJSON.getString(RELEASE_DATE);
+            double voteAverage = movieJSON.getDouble(VOTE_AVG);
+            String synopsis = movieJSON.getString(OVERVIEW);
+            return new Movie(movieId, posterPath, releaseDate, title, voteAverage, synopsis);
+        } catch (JSONException e) {
+            Log.e(LOG_TAG_UTILITY, "JSON exception: ", e);
+        }
+        return null;
     }
 
     public static ArrayList<String> getReviewsFromJsonStr(String jsonStr) {
@@ -122,14 +127,14 @@ public final class Utility {
         return reviews;
     }
 
-    public static String getTrailerKeyFromJson(String jsonStr){
-        try{
+    public static String getTrailerKeyFromJson(String jsonStr) {
+        try {
             JSONObject trailerJson;
 
             JSONObject initJson = new JSONObject(jsonStr);
             JSONArray results = initJson.getJSONArray("results");
 
-            if (results.length() > 0){
+            if (results.length() > 0) {
                 trailerJson = results.getJSONObject(0);
                 return trailerJson.getString("key");
             }
@@ -146,6 +151,7 @@ public final class Utility {
             URL url = createUrl(baseUrl);
             String jsonStr = makeHttpRequest(url);
             int MAX_RESULTS = 48;
+            Log.i(LOG_TAG_UTILITY, "SEARCH QUERY TERM: " + searchQuery);
 
             return getMoviesFromJsonStr(jsonStr, MAX_RESULTS);
 
@@ -192,10 +198,7 @@ public final class Utility {
     }
 
 
-
-
-
-    private static URL createUrl(String baseUrl){
+    private static URL createUrl(String baseUrl) {
         String API_PARAM = "api_key";
 
         Uri uri = Uri.parse(baseUrl).buildUpon()
