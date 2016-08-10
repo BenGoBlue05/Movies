@@ -1,7 +1,9 @@
-package com.example.android.movies;
+package com.example.android.movies.detail;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.example.android.movies.R;
 
 public class DetailActivity extends AppCompatActivity {
 

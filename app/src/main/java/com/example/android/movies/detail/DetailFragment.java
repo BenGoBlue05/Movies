@@ -1,4 +1,4 @@
-package com.example.android.movies;
+package com.example.android.movies.detail;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.android.movies.Movie;
+import com.example.android.movies.R;
+import com.example.android.movies.Utility;
 import com.example.android.movies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 

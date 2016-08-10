@@ -1,10 +1,13 @@
-package com.example.android.movies;
+package com.example.android.movies.main;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,16 +18,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.android.movies.Movie;
+import com.example.android.movies.MovieAdapter;
+import com.example.android.movies.R;
+import com.example.android.movies.Utility;
+import com.example.android.movies.detail.DetailActivity;
+
 import java.util.ArrayList;
 
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
     private final String LOG_TAG = MainFragment.class.getSimpleName();
+
     private MovieAdapter mMovieAdapter;
 
 
-    public MainFragment() {
-    }
+
+    public MainFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,14 +60,14 @@ public class MainFragment extends Fragment {
                 Utility.sSortBy = getString(R.string.rating_query_param);
                 break;
             case R.id.favorites_menu_fragmentmain:
-                Log.i(LOG_TAG, "FAVORITES SELECTED");
+                Utility.sSortBy = getString(R.string.favorites_query_param);
                 break;
             default:
                 Log.i(LOG_TAG, "NO MENU ITEM RECOGNIZED");
         }
 
         Log.i(LOG_TAG, "PREFERENCE: " + Utility.sSortBy);
-        new FetchMovieTask().execute(Utility.sSortBy);
+        new FetchMoviesTask().execute(Utility.sSortBy);
         return true;
     }
 
@@ -80,29 +91,42 @@ public class MainFragment extends Fragment {
         return rootView;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
         try {
             if (!Utility.sSortBy.isEmpty()) {
                 Log.i(LOG_TAG, "mPREF IS NOT NULL: " + Utility.sSortBy);
-                new FetchMovieTask().execute(Utility.sSortBy);
+                new FetchMoviesTask().execute(Utility.sSortBy);
                 return;
             }
         } catch (NullPointerException e) {
             Log.e(LOG_TAG, "mPREF IS NULL: " + Utility.sSortBy);
         }
-        Utility.sSortBy = getString(R.string.pref_default_value);
+        Utility.sSortBy = getString(R.string.default_query_param);
         Log.i(LOG_TAG, "PREFERENCE MAIN FRAG: " + Utility.sSortBy);
-        new FetchMovieTask().execute(Utility.sSortBy);
+        new FetchMoviesTask().execute(Utility.sSortBy);
 
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
+
+        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         //exampleApiKey = "http://api.themoviedb.org/3/movie/popular?api_key=";
         @Override
@@ -111,7 +135,17 @@ public class MainFragment extends Fragment {
                 return null;
             }
             Log.i(LOG_TAG, "PARAMS[0]: " + params[0]);
-            return Utility.getMovies(params[0]);
+
+            if (Utility.sSortBy.equals(getString(R.string.rating_query_param)) ||
+                    Utility.sSortBy.equals(getString(R.string.popularity_query_param))){
+                return Utility.getMovies(params[0]);
+            }
+
+            if (Utility.sSortBy.equals(getString(R.string.favorites_query_param))){
+                return Utility.getFavoriteMovies(getContext());
+            }
+
+            return null;
         }
 
         @Override

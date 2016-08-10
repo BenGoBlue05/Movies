@@ -1,5 +1,7 @@
 package com.example.android.movies;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
@@ -24,44 +26,21 @@ import java.util.ArrayList;
  */
 public final class Utility {
 
-    static final String[] MOVIE_COLUMNS = {
-            MovieContract.MovieEntry._ID,
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
-            MovieContract.MovieEntry.COLUMN_TITLE,
-            MovieContract.MovieEntry.COLUMN_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_POSTER_PATH,
-            MovieContract.MovieEntry.COLUMN_VOTE_AVG,
-            MovieContract.MovieEntry.COLUMN_SYNOPSIS,
-    };
-    static final int COL_TABLE_ID = 0;
-    static final int COL_MOVIE_ID = 1;
-    static final int COL_TITLE = 2;
-    static final int COL_RELEASE_DATE = 3;
-    static final int COL_POSTER_PATH = 4;
-    static final int COL_VOTE_AVG = 5;
-    static final int COL_SYNOPSIS = 6;
     private static final String LOG_TAG_UTILITY = Utility.class.getSimpleName();
-    static String sSortBy;
-    private final String LOG_TAG = DetailActivity.class.getSimpleName();
+    public static String sSortBy;
 
-    public static ArrayList<Movie> getMoviesFromJsonStr(String jsonStr, int maxResults)
+    public static ArrayList<Movie> getMoviesFromJsonStr(String jsonStr)
             throws JSONException {
 
         final String RESULTS = "results";
 
         ArrayList<Movie> movies = new ArrayList<>();
-        int numMovies;
+
         try {
             JSONObject initJson = new JSONObject(jsonStr);
             JSONArray results = initJson.getJSONArray(RESULTS);
 
-            if (results.length() < maxResults) {
-                numMovies = results.length();
-            } else {
-                numMovies = maxResults;
-            }
-
-            for (int i = 0; i < numMovies; i++) {
+            for (int i = 0; i < results.length(); i++) {
                 try {
                     JSONObject movieData = results.getJSONObject(i);
                     Movie movie = getMovieFromJsonObject(movieData);
@@ -70,7 +49,6 @@ public final class Utility {
                     Log.e(LOG_TAG_UTILITY, "JSON EXCEPTION: ", e);
                 }
             }
-
         } catch (JSONException e) {
             Log.e(LOG_TAG_UTILITY, "MISSING FIELD ", e);
         }
@@ -80,19 +58,20 @@ public final class Utility {
     public static Movie getMovieFromJsonObject(JSONObject movieJSON) {
         try {
 
-            final String POSTER_PATH = "poster_path";
-            final String MOVIE_ID = "id";
-            final String TITLE = "title";
-            final String RELEASE_DATE = "release_date";
-            final String VOTE_AVG = "vote_average";
-            final String OVERVIEW = "overview";
+//            http://docs.themoviedb.apiary.io/#reference/configuration/configuration/get?console=1
+            final String TMDB_POSTER_PATH = "poster_path";
+            final String TMDB_MOVIE_ID = "id";
+            final String TMDB_TITLE = "title";
+            final String TMDB_RELEASE_DATE = "release_date";
+            final String TMDB_VOTE_AVG = "vote_average";
+            final String TMBD_OVERVIEW = "overview";
 
-            String posterPath = movieJSON.getString(POSTER_PATH);
-            long movieId = movieJSON.getLong(MOVIE_ID);
-            String title = movieJSON.getString(TITLE);
-            String releaseDate = movieJSON.getString(RELEASE_DATE);
-            double voteAverage = movieJSON.getDouble(VOTE_AVG);
-            String synopsis = movieJSON.getString(OVERVIEW);
+            String posterPath = movieJSON.getString(TMDB_POSTER_PATH);
+            long movieId = movieJSON.getLong(TMDB_MOVIE_ID);
+            String title = movieJSON.getString(TMDB_TITLE);
+            String releaseDate = movieJSON.getString(TMDB_RELEASE_DATE);
+            double voteAverage = movieJSON.getDouble(TMDB_VOTE_AVG);
+            String synopsis = movieJSON.getString(TMBD_OVERVIEW);
             return new Movie(movieId, posterPath, releaseDate, title, voteAverage, synopsis);
         } catch (JSONException e) {
             Log.e(LOG_TAG_UTILITY, "JSON exception: ", e);
@@ -150,10 +129,9 @@ public final class Utility {
             final String baseUrl = "http://api.themoviedb.org/3/movie/" + searchQuery + "?";
             URL url = createUrl(baseUrl);
             String jsonStr = makeHttpRequest(url);
-            int MAX_RESULTS = 48;
             Log.i(LOG_TAG_UTILITY, "SEARCH QUERY TERM: " + searchQuery);
 
-            return getMoviesFromJsonStr(jsonStr, MAX_RESULTS);
+            return getMoviesFromJsonStr(jsonStr);
 
         } catch (IOException e) {
             Log.e(LOG_TAG_UTILITY, "IOEXCEPTION " + e);
@@ -164,7 +142,74 @@ public final class Utility {
         }
         return null;
     }
+    //http://api.themoviedb.org/3/movie/297761?api_key=fd6a31594405033bb36da6d8fba873c5
 
+
+    public static Movie getFavoriteMovie(Long movieId) {
+
+        try {
+            final String urlStr = "http://api.themoviedb.org/3/movie/" +
+                    movieId + "api_key=" + BuildConfig.API_KEY;
+            URL url = createUrl(urlStr);
+            String jsonStr = makeHttpRequest(url);
+            Log.i(LOG_TAG_UTILITY, jsonStr);
+            return getMovieFromJsonObject(new JSONObject(jsonStr));
+        } catch (IOException e) {
+            Log.e(LOG_TAG_UTILITY, "IOEXCEPTION ", e);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ArrayList<Movie> getFavoriteMovies(Context context) {
+
+        ArrayList<Movie> movies = new ArrayList<>();
+        ArrayList<Long> movieIds = getFavoriteMoviesIds(context);
+
+        for (Long movieId : movieIds) {
+            movies.add(getFavoriteMovie(movieId));
+        }
+
+        return movies;
+    }
+
+    public static ArrayList<Long> getFavoriteMoviesIds(Context context) {
+
+        ArrayList<Long> movieIds = new ArrayList<>();
+
+        Cursor cursor = context.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry.COLUMN_MOVIE_ID},
+                null,
+                null,
+                null);
+
+        try {
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    long _id = cursor.getLong(0);
+                    Log.i(LOG_TAG_UTILITY, "THE MOVIE ID FROM CURSOR IS: " + _id);
+                    movieIds.add(_id);
+                }
+            }
+        } catch (NullPointerException e) {
+            Log.e(LOG_TAG_UTILITY, "NULL POINTER FOR CURSOR", e);
+        } catch (IndexOutOfBoundsException e) {
+            Log.e(LOG_TAG_UTILITY, "INDEX OUT OF BOUNDS FROM CURSOR", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return movieIds;
+    }
+
+
+//    public static ArrayList<Movie> getFavoriteMovies(ArrayList<Long> movie_ids){
+//
+//    }
 
     public static ArrayList<String> getReviews(long movieId) {
 
@@ -231,8 +276,6 @@ public final class Utility {
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
-            // If the request was successful (response code 200),
-            // then read the input stream and parse the response.
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
@@ -246,9 +289,6 @@ public final class Utility {
                 urlConnection.disconnect();
             }
             if (inputStream != null) {
-                // Closing the input stream could throw an IOException, which is why
-                // the makeHttpRequest(URL url) method signature specifies than an IOException
-                // could be thrown.
                 inputStream.close();
             }
         }

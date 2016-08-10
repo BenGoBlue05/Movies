@@ -22,8 +22,11 @@ public class MovieProvider extends ContentProvider{
     static final int MOVIE = 100;
     static final int MOVIE_TABLE_ID = 101;
     static final int MOVIE_ID = 200;
-    static final String sMovieIdSelection =
+
+    static final String sMovieTableIdSelection =
             MovieContract.MovieEntry._ID + " = ?";
+    static final String sMovieIdSelection =
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?";
 
     static UriMatcher buildUriMatcher(){
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -34,18 +37,20 @@ public class MovieProvider extends ContentProvider{
         return uriMatcher;
     }
 
-    private Cursor getMovieById(Uri uri, String[] projection, String sortOrder){
+    private Cursor getMovieByTableId(Uri uri, String[] projection, String sortOrder){
         long id = MovieContract.MovieEntry.getIdFromUri(uri);
         return mOpenHelper.getReadableDatabase().query(
                 MovieContract.MovieEntry.TABLE_NAME,
                 projection,
-                sMovieIdSelection,
+                sMovieTableIdSelection,
                 new String[] {Long.toString(id)},
                 null,
                 null,
                 sortOrder
         );
     }
+
+
     @Override
     public boolean onCreate() {
         mOpenHelper = new MovieDbHelper(getContext());
@@ -63,7 +68,7 @@ public class MovieProvider extends ContentProvider{
                 selectionArgs, null, null, sortOrder);
                 break;
             case MOVIE_TABLE_ID:
-                retCursor = getMovieById(uri, projection, sortOrder);
+                retCursor = getMovieByTableId(uri, projection, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException("UNKNOWN URI: " + uri);
@@ -118,7 +123,7 @@ public class MovieProvider extends ContentProvider{
             case MOVIE_TABLE_ID:
                 long id = MovieContract.MovieEntry.getIdFromUri(uri);
                 rowsDeleted = db.delete(
-                        MovieContract.MovieEntry.TABLE_NAME, sMovieIdSelection, new String[]{Long.toString(id)});
+                        MovieContract.MovieEntry.TABLE_NAME, sMovieTableIdSelection, new String[]{Long.toString(id)});
                 break;
             default:
                 throw new UnsupportedOperationException("UNKNOWN URI " + uri);
@@ -139,7 +144,7 @@ public class MovieProvider extends ContentProvider{
             case MOVIE_TABLE_ID:
                 long id = MovieContract.MovieEntry.getIdFromUri(uri);
                 rowsUpdated = db.update(MovieContract.MovieEntry.TABLE_NAME,
-                        contentValues, sMovieIdSelection, new String[]{Long.toString(id)});
+                        contentValues, sMovieTableIdSelection, new String[]{Long.toString(id)});
                 break;
             default:
                 throw new UnsupportedOperationException("UNKNOWN URI " + uri);

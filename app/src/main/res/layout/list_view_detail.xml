@@ -3,12 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".DetailFragment">
+    tools:context=".detail.DetailFragment">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listview_detail"
-        android:text="@string/hello_blank_fragment"/>
+        android:id="@+id/listview_detail" />
 
 </FrameLayout>
