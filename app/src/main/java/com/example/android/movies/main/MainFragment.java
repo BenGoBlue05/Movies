@@ -25,17 +25,13 @@ import com.example.android.movies.detail.DetailFragment;
 import java.util.ArrayList;
 
 
-public class MainFragment extends Fragment{
+public class MainFragment extends Fragment {
 
     private final String LOG_TAG = MainFragment.class.getSimpleName();
-
     private MovieAdapter mMovieAdapter;
 
-    public static final int DETAIL_ACTIVITY_REQUEST_CODE = 3;
-
-
-
-    public MainFragment() {}
+    public MainFragment() {
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,10 +81,9 @@ public class MainFragment extends Fragment{
                 Movie movie = mMovieAdapter.getItem(i);
                 Intent intent = new Intent(getContext(), DetailActivity.class)
                         .putExtra(getString(R.string.movie_key), movie);
-                if (!Utility.TWO_PANE){
+                if (!Utility.TWO_PANE) {
                     startActivity(intent);
-                }
-                else{
+                } else {
                     Bundle args = new Bundle();
                     args.putParcelable(getString(R.string.movie_key), movie);
                     DetailFragment detailFragment = new DetailFragment();
@@ -133,11 +128,11 @@ public class MainFragment extends Fragment{
             Log.i(LOG_TAG, "PARAMS[0]: " + params[0]);
 
             if (Utility.sSortBy.equals(getString(R.string.rating_query_param)) ||
-                    Utility.sSortBy.equals(getString(R.string.popularity_query_param))){
+                    Utility.sSortBy.equals(getString(R.string.popularity_query_param))) {
                 return Utility.getMovies(params[0]);
             }
 
-            if (Utility.sSortBy.equals(getString(R.string.favorites_query_param))){
+            if (Utility.sSortBy.equals(getString(R.string.favorites_query_param))) {
                 return Utility.getFavoriteMovies(getContext());
             }
 

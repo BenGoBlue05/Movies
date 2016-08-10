@@ -34,7 +34,6 @@ public class DetailFragment extends Fragment {
     private long mMovieId;
     private String mTrailerKey;
 
-
     public DetailFragment() {
     }
 
@@ -51,17 +50,19 @@ public class DetailFragment extends Fragment {
         Movie movie = getActivity().getIntent().getParcelableExtra(getString(R.string.movie_key));
 
         if (movie == null) {
-            try{
+            try {
                 movie = getArguments().getParcelable(getString(R.string.movie_key));
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 Log.e(LOG_TAG, "ARGS ARE NULL", e);
             }
         }
 
-        if (movie == null){
+        if (movie == null) {
+            rootview.setVisibility(View.GONE);
             return rootview;
+        } else{
+            rootview.setVisibility(View.VISIBLE);
         }
-
 
         mTitle = movie.getTitle();
         mReleaseDate = movie.getReleaseDate();
@@ -86,7 +87,6 @@ public class DetailFragment extends Fragment {
 
         return rootview;
     }
-
 
     @Override
     public void onStart() {

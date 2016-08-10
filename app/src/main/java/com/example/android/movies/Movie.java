@@ -6,8 +6,20 @@ import android.os.Parcelable;
 /**
  * Created by bplewis5 on 7/11/16.
  */
-public class Movie implements Parcelable{
+public class Movie implements Parcelable {
 
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
     long mMovieId;
     String mPosterUrlStr;
     String mReleaseDate;
@@ -22,6 +34,15 @@ public class Movie implements Parcelable{
         this.mTitle = mTitle;
         this.mVoteAvg = mVoteAvg;
         this.mSynopsis = mSynopsis;
+    }
+
+    protected Movie(Parcel in) {
+        mMovieId = in.readLong();
+        mPosterUrlStr = in.readString();
+        mReleaseDate = in.readString();
+        mTitle = in.readString();
+        mVoteAvg = in.readDouble();
+        mSynopsis = in.readString();
     }
 
     public String getPosterUrlStr() {
@@ -48,15 +69,6 @@ public class Movie implements Parcelable{
         return mMovieId;
     }
 
-    protected Movie(Parcel in) {
-        mMovieId = in.readLong();
-        mPosterUrlStr = in.readString();
-        mReleaseDate = in.readString();
-        mTitle = in.readString();
-        mVoteAvg = in.readDouble();
-        mSynopsis = in.readString();
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -71,17 +83,4 @@ public class Movie implements Parcelable{
         dest.writeDouble(mVoteAvg);
         dest.writeString(mSynopsis);
     }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel in) {
-            return new Movie(in);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 }

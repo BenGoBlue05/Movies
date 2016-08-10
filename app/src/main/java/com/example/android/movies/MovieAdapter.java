@@ -14,24 +14,19 @@ import java.util.ArrayList;
 /**
  * Created by bplewis5 on 7/11/16.
  */
-public class MovieAdapter extends ArrayAdapter<Movie>{
+public class MovieAdapter extends ArrayAdapter<Movie> {
 
+    final String BASE_URL = "http://image.tmdb.org/t/p/w500/";
     private final String LOG_TAG = MovieAdapter.class.getSimpleName();
 
     public MovieAdapter(Context context, ArrayList<Movie> movies) {
         super(context, 0, movies);
     }
 
-    static class ViewHolder{
-        public ImageView imageView;
-    }
-
-    final String BASE_URL = "http://image.tmdb.org/t/p/w500/";
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View gridItemView = convertView;
-        if (gridItemView == null){
+        if (gridItemView == null) {
             gridItemView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item,
                     parent, false);
             ViewHolder viewHolder = new ViewHolder();
@@ -45,5 +40,9 @@ public class MovieAdapter extends ArrayAdapter<Movie>{
         Picasso.with(getContext()).load(finalImgUrlStr).into(holder.imageView);
 
         return gridItemView;
+    }
+
+    static class ViewHolder {
+        public ImageView imageView;
     }
 }
