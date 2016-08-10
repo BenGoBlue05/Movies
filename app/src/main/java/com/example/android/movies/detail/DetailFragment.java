@@ -60,7 +60,7 @@ public class DetailFragment extends Fragment {
         if (movie == null) {
             rootview.setVisibility(View.GONE);
             return rootview;
-        } else{
+        } else {
             rootview.setVisibility(View.VISIBLE);
         }
 
@@ -76,12 +76,11 @@ public class DetailFragment extends Fragment {
         final ContentValues values =
                 createValues(mMovieId, mTitle, mReleaseDate, mPosterPath, mVoteAverage, mSynopsis);
 
-        Button addFavoriteButton = (Button) rootview.findViewById(R.id.detail_add_favorites_button);
+        final Button addFavoriteButton = (Button) rootview.findViewById(R.id.detail_add_favorites_button);
         addFavoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getContext().getContentResolver()
-                        .insert(MovieContract.MovieEntry.CONTENT_URI, values);
+                Utility.addFavoriteMovie(getContext(), mMovieId, values);
             }
         });
 
@@ -139,6 +138,8 @@ public class DetailFragment extends Fragment {
             final String posterUrl = "http://image.tmdb.org/t/p/w500/" + mPosterPath;
             final String trailerUrl = "https://www.youtube.com/watch?v=" + mTrailerKey;
             final String trailerThumbnailUrl = String.format("http://img.youtube.com/vi/%1$s/0.jpg", mTrailerKey);
+            Log.i(LOG_TAG, "TRAILER_THUMBNAIL URL: " + trailerThumbnailUrl);
+            Log.i(LOG_TAG, "mTRAILER_KEY: " + mTrailerKey);
 
             TextView titleTextView = (TextView) getActivity().findViewById(R.id.detail_title_textview);
             TextView releaseDateTextView = (TextView) getActivity().findViewById(R.id.detail_release_date_textview);
@@ -168,7 +169,9 @@ public class DetailFragment extends Fragment {
             }
 
             ImageView trailer = (ImageView) getActivity().findViewById(R.id.detail_trailer_imageview);
-            if (trailer != null) {
+            ImageView playIcon = (ImageView) getActivity().findViewById(R.id.detail_play_icon_imageview);
+            if (mTrailerKey != null) {
+                playIcon.setVisibility(View.VISIBLE);
                 Picasso.with(getContext()).load(trailerThumbnailUrl).into(trailer);
                 trailer.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -177,14 +180,13 @@ public class DetailFragment extends Fragment {
                         startActivity(trailerIntent);
                     }
                 });
+            } else {
+                playIcon.setVisibility(View.GONE);
             }
-
-
         }
-
-
     }
 }
+
 
 
 

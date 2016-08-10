@@ -1,9 +1,11 @@
 package com.example.android.movies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.movies.data.MovieContract;
 
@@ -146,6 +148,27 @@ public final class Utility {
     //http://api.themoviedb.org/3/movie/297761?api_key=fd6a31594405033bb36da6d8fba873c5
 
 
+
+    public static void addFavoriteMovie(Context context, long movieId, ContentValues values){
+
+        Cursor cursor = context.getContentResolver().query(
+                MovieContract.MovieEntry.CONTENT_URI,
+                new String[]{MovieContract.MovieEntry._ID},
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ?",
+                new String[]{Long.toString(movieId)},
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()){
+            Toast.makeText(context, context.getString(R.string.favorite_already_added), Toast.LENGTH_LONG).show();
+        }
+        else{
+            context.getContentResolver()
+                    .insert(MovieContract.MovieEntry.CONTENT_URI, values);
+        }
+        cursor.close();
+    }
     public static Movie getFavoriteMovie(Long movieId) {
 
         try {

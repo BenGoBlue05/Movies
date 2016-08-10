@@ -1,6 +1,7 @@
 package com.example.android.movies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,16 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
         ViewHolder holder = (ViewHolder) gridItemView.getTag();
         Movie movie = getItem(position);
-        String finalImgUrlStr = BASE_URL + movie.getPosterUrlStr();
-        Picasso.with(getContext()).load(finalImgUrlStr).into(holder.imageView);
+        String finalImgUrlStr = null;
+        try {
+            finalImgUrlStr = BASE_URL + movie.getPosterUrlStr();
+        } catch (NullPointerException e) {
+            Log.e(LOG_TAG, "NULL POINTER", e);
+        }
+
+        if (finalImgUrlStr != null) {
+            Picasso.with(getContext()).load(finalImgUrlStr).into(holder.imageView);
+        }
 
         return gridItemView;
     }

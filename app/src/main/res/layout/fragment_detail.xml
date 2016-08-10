@@ -12,7 +12,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/detail_trailer_container">
 
             <ImageView
                 android:id="@+id/detail_trailer_imageview"
@@ -30,6 +31,8 @@
                 android:scaleX=".25"
                 android:scaleY=".25"
                 android:background="@android:color/transparent"
+                android:adjustViewBounds="true"
+                android:id="@+id/detail_play_icon_imageview"
                 />
         </RelativeLayout>
 
