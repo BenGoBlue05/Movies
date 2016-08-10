@@ -18,7 +18,7 @@
                 android:id="@+id/detail_trailer_imageview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="320dp"
+                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 tools:src="@drawable/bitmoji_my_face"
                 android:outlineProvider="bounds" />

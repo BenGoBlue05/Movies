@@ -48,7 +48,20 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        Movie movie = getActivity().getIntent().getParcelableExtra("EXTRA_MOVIE");
+        Movie movie = getActivity().getIntent().getParcelableExtra(getString(R.string.movie_key));
+
+        if (movie == null) {
+            try{
+                movie = getArguments().getParcelable(getString(R.string.movie_key));
+            } catch (NullPointerException e){
+                Log.e(LOG_TAG, "ARGS ARE NULL", e);
+            }
+        }
+
+        if (movie == null){
+            return rootview;
+        }
+
 
         mTitle = movie.getTitle();
         mReleaseDate = movie.getReleaseDate();
@@ -100,7 +113,7 @@ public class DetailFragment extends Fragment {
         return values;
     }
 
-    public class FetchDetailsTask extends AsyncTask<Long, Void, ArrayList<String>>  {
+    public class FetchDetailsTask extends AsyncTask<Long, Void, ArrayList<String>> {
 
         @Override
         protected ArrayList<String> doInBackground(Long... movieIds) {
@@ -140,7 +153,7 @@ public class DetailFragment extends Fragment {
                 userReviewTextView.setText(reviews.get(0));
             } catch (NullPointerException e) {
                 Log.e(LOG_TAG, "NULL POINTER", e);
-            }catch (IndexOutOfBoundsException e){
+            } catch (IndexOutOfBoundsException e) {
                 Log.e(LOG_TAG, "INDEX OUT OF BOUNDS");
             }
 
@@ -155,7 +168,7 @@ public class DetailFragment extends Fragment {
             }
 
             ImageView trailer = (ImageView) getActivity().findViewById(R.id.detail_trailer_imageview);
-            if (trailer != null){
+            if (trailer != null) {
                 Picasso.with(getContext()).load(trailerThumbnailUrl).into(trailer);
                 trailer.setOnClickListener(new View.OnClickListener() {
                     @Override

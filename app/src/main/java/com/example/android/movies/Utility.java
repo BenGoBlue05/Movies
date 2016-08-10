@@ -28,6 +28,7 @@ public final class Utility {
 
     private static final String LOG_TAG_UTILITY = Utility.class.getSimpleName();
     public static String sSortBy;
+    public static boolean TWO_PANE;
 
     public static ArrayList<Movie> getMoviesFromJsonStr(String jsonStr)
             throws JSONException {

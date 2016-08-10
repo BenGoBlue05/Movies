@@ -1,13 +1,10 @@
 package com.example.android.movies.main;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,15 +20,18 @@ import com.example.android.movies.MovieAdapter;
 import com.example.android.movies.R;
 import com.example.android.movies.Utility;
 import com.example.android.movies.detail.DetailActivity;
+import com.example.android.movies.detail.DetailFragment;
 
 import java.util.ArrayList;
 
 
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainFragment extends Fragment{
 
     private final String LOG_TAG = MainFragment.class.getSimpleName();
 
     private MovieAdapter mMovieAdapter;
+
+    public static final int DETAIL_ACTIVITY_REQUEST_CODE = 3;
 
 
 
@@ -84,8 +84,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Movie movie = mMovieAdapter.getItem(i);
                 Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putExtra("EXTRA_MOVIE", movie);
-                startActivity(intent);
+                        .putExtra(getString(R.string.movie_key), movie);
+                if (!Utility.TWO_PANE){
+                    startActivity(intent);
+                }
+                else{
+                    Bundle args = new Bundle();
+                    args.putParcelable(getString(R.string.movie_key), movie);
+                    DetailFragment detailFragment = new DetailFragment();
+                    detailFragment.setArguments(args);
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.detail_container, detailFragment, MainActivity.DETAILFRAGMENT_TAG)
+                            .commit();
+                }
             }
         });
         return rootView;
@@ -106,21 +117,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         Utility.sSortBy = getString(R.string.default_query_param);
         Log.i(LOG_TAG, "PREFERENCE MAIN FRAG: " + Utility.sSortBy);
         new FetchMoviesTask().execute(Utility.sSortBy);
-
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 

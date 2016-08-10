@@ -10,8 +10,10 @@
         android:id="@+id/detail_poster_imageview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        tools:src="@drawable/bitmoji_my_face" />
+        android:scaleType="centerCrop"
+        tools:src="@drawable/bitmoji_my_face"
+        android:adjustViewBounds="true"
+        android:maxHeight="320dp"/>
 
     <TextView
         android:id="@+id/detail_title_textview"
